@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miller Mora Choez · Desarrollador Full Stack</title>
+<meta name="description" content="Portafolio de Miller Jeampier Mora Choez, Desarrollador Full Stack especializado en Angular, Node.js, microservicios y arquitecturas escalables.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💠</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=VT323&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem('mj-theme');
+      if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    } catch (e) { /* no-op */ }
+  })();
+</script>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <span class="loader-logo">MJ<span class="dot">.</span></span>
+    <div class="loader-bar"><span></span></div>
+  </div>
+</div>
+
+<div class="progress-bar" id="scrollProgress" aria-hidden="true"></div>
+
+<header class="header" id="header">
+  <nav class="nav container">
+    <a href="#inicio" class="logo">MJ<span class="dot">.</span></a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#inicio" class="nav-link active" data-nav data-i18n="nav.home">Inicio</a></li>
+      <li><a href="#sobre-mi" class="nav-link" data-nav data-i18n="nav.about">Sobre mí</a></li>
+      <li><a href="#skills" class="nav-link" data-nav>Skills</a></li>
+      <li><a href="#experiencia" class="nav-link" data-nav data-i18n="nav.experience">Experiencia</a></li>
+      <li><a href="#proyectos" class="nav-link" data-nav data-i18n="nav.projects">Proyectos</a></li>
+      <li><a href="#contacto" class="nav-link" data-nav data-i18n="nav.contact">Contacto</a></li>
+    </ul>
+
+    <div class="nav-utility">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" d="M12 4V2M12 22v-2M4.93 4.93 3.51 3.51M20.49 20.49l-1.42-1.42M4 12H2M22 12h-2M4.93 19.07 3.51 20.49M20.49 3.51l-1.42 1.42"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <button class="icon-btn lang-btn" id="langToggle" type="button" aria-label="Cambiar idioma / Change language" title="ES / EN">
+        <span data-lang-label>ES</span>
+      </button>
+    </div>
+
+    <a href="assets/cv/CV_Miller_Mora_ATS_Harvard.pdf" download class="btn btn-outline nav-cv">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 15.577l-3.538-3.538.708-.708L11.5 13.66V4h1v9.66l2.33-2.33.708.708L12 15.577zM5 18v1h14v-1H5z"/></svg>
+      <span data-i18n="nav.cv">CV</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <canvas id="cosmos" class="cosmos-canvas" aria-hidden="true"></canvas>
+
+    <div class="container hero-content">
+      <p class="eyebrow reveal"><span class="pulse-dot"></span> <span data-i18n="hero.eyebrow">Disponible para nuevos proyectos</span></p>
+
+      <h1 class="hero-title reveal" data-i18n-html="hero.title">
+        Hola, soy <span class="gradient-text">Miller Mora</span>
+      </h1>
+
+      <h2 class="hero-subtitle reveal">
+        <span id="typed"></span><span class="cursor-blink">|</span>
+      </h2>
+
+      <p class="hero-desc reveal" data-i18n-html="hero.desc">
+        Desarrollador Full Stack especializado en <strong>Angular</strong>, <strong>Node.js</strong> y
+        arquitecturas de <strong>microservicios</strong>. Construyo soluciones empresariales escalables,
+        integraciones robustas y experiencias de usuario que combinan rendimiento con diseño.
+      </p>
+
+      <div class="hero-actions reveal">
+        <a href="#proyectos" class="btn btn-primary">
+          <span data-i18n="hero.cta.experience">Ver experiencia</span>
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 11h13.17l-5.59-5.59L13 4l8 8-8 8-1.41-1.41L17.17 13H4z"/></svg>
+        </a>
+        <button class="btn btn-ghost" id="btnPrintCv" type="button">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+          <span data-i18n="btn.print">Imprimir CV</span>
+        </button>
+        <a href="assets/cv/CV_Miller_Mora_ATS_Harvard.pdf" download class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 15.577l-5-5 .708-.708L11.5 13.66V3h1v10.66l3.792-3.791.708.708-5 5zM5 19v-2H4v3h16v-3h-1v2H5z"/></svg>
+          <span data-i18n="btn.download">Descargar CV</span>
+        </a>
+      </div>
+
+      <div class="hero-meta reveal">
+        <a href="mailto:moramiller12345@gmail.com" class="meta-item">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/></svg>
+          moramiller12345@gmail.com
+        </a>
+        <a href="tel:+593959847456" class="meta-item">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.57.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.57 1 1 0 01-.25 1.02z"/></svg>
+          0959 847 456
+        </a>
+        <span class="meta-item">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+          Guayaquil, Ecuador
+        </span>
+      </div>
+    </div>
+
+    <a href="#sobre-mi" class="scroll-cue" aria-label="Bajar a la siguiente sección">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- SOBRE MI -->
+  <section class="section" id="sobre-mi">
+    <div class="container">
+      <p class="section-tag reveal" data-i18n="about.tag">01 · Sobre mí</p>
+      <h2 class="section-title reveal" data-i18n="about.title">Perfil profesional</h2>
+
+      <div class="about-grid">
+        <p class="about-text reveal" data-i18n-html="about.text">
+          Desarrollador Full Stack con experiencia en el diseño, desarrollo e implementación de soluciones
+          empresariales escalables basadas en <strong class="hl">arquitecturas de microservicios y microfrontends</strong>.
+          Especializado en tecnologías <strong class="hl">JavaScript/TypeScript, Angular y Node.js</strong>, con
+          ecosistemas orientados a alta disponibilidad y rendimiento.
+          <br><br>
+          He participado en proyectos estratégicos para entidades gubernamentales, aseguradoras y corporaciones
+          privadas en Ecuador, liderando iniciativas de desarrollo frontend y backend, integraciones empresariales,
+          sincronización de plataformas, automatización de procesos y modernización de sistemas legacy.
+          <br><br>
+          Cuento con experiencia en <strong class="hl">liderazgo técnico</strong>, revisión de código (Pull Requests),
+          definición de estándares de desarrollo, optimización de rendimiento con Redis, integración basada en
+          eventos con Kafka y despliegue de servicios contenerizados mediante Docker, todo bajo metodologías
+          ágiles (Scrum).
+        </p>
+
+        <div class="stats reveal">
+          <div class="stat-card">
+            <span class="stat-number" data-count="6">0</span>
+            <span class="stat-plus">+</span>
+            <span class="stat-label" data-i18n="about.stat1">Proyectos empresariales</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-count="7">0</span>
+            <span class="stat-label" data-i18n="about.stat2">Sistemas integrados en una sola sincronización</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-count="22">0</span>
+            <span class="stat-label" data-i18n="about.stat3">Tecnologías dominadas</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-count="2">0</span>
+            <span class="stat-label" data-i18n="about.stat4">Proyectos liderados técnicamente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="edu-card reveal">
+        <div class="edu-icon">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4.82l7 3.82 7-3.82v-4.82L12 17l-7-3.82z"/></svg>
+        </div>
+        <div>
+          <h3 data-i18n="about.edu.title">Tecnólogo Superior en Desarrollo de Software</h3>
+          <p data-i18n="about.edu.school">Instituto Superior Tecnológico Guayaquil</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="section section-alt" id="skills">
+    <div class="container">
+      <p class="section-tag reveal" data-i18n="skills.tag">02 · Habilidades</p>
+      <h2 class="section-title reveal" data-i18n="skills.title">Stack tecnológico</h2>
+      <p class="section-sub reveal" data-i18n="skills.sub">Tecnologías y herramientas que utilizo para construir productos escalables, de principio a fin.</p>
+
+      <div class="skills-grid">
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">🖥️</span>
+            <h3>Frontend</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">Angular</span>
+            <span class="tag">Angular Material</span>
+            <span class="tag">Tailwind CSS</span>
+            <span class="tag">Webix</span>
+            <span class="tag">React Native</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">⚙️</span>
+            <h3>Backend</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">Node.js</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">C#</span>
+            <span class="tag">.NET</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">🗄️</span>
+            <h3 data-i18n="skills.cat.db">Bases de datos</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">MongoDB</span>
+            <span class="tag">Oracle</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">🧩</span>
+            <h3 data-i18n="skills.cat.arch">Arquitectura &amp; DevOps</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">Microservicios</span>
+            <span class="tag">Microfrontends</span>
+            <span class="tag">Docker</span>
+            <span class="tag">Kafka</span>
+            <span class="tag">Redis</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">🤖</span>
+            <h3 data-i18n="skills.cat.ai">Inteligencia Artificial</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">Claude</span>
+            <span class="tag">ChatGPT</span>
+            <span class="tag">Gemini</span>
+            <span class="tag">OpenCode</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <span class="skill-icon">✅</span>
+            <h3 data-i18n="skills.cat.quality">Metodologías &amp; Calidad</h3>
+          </div>
+          <div class="tags">
+            <span class="tag">Scrum</span>
+            <span class="tag">SonarQube</span>
+            <span class="tag">Git</span>
+            <span class="tag">Code Review</span>
+            <span class="tag">Swagger / OpenAPI</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-carousel-wrap reveal">
+        <p class="carousel-caption" data-i18n="skills.carousel">Todas las tecnologías con las que trabajo — pasa el cursor sobre un ícono</p>
+        <div class="tech-carousel">
+          <div class="tech-fade tech-fade-left" aria-hidden="true"></div>
+          <div class="tech-fade tech-fade-right" aria-hidden="true"></div>
+          <div class="tech-row" id="techRow1"><div class="tech-track"></div></div>
+          <div class="tech-row reverse" id="techRow2"><div class="tech-track"></div></div>
+          <div class="tech-row" id="techRow3"><div class="tech-track"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCIA -->
+  <section class="section" id="experiencia">
+    <div class="container">
+      <p class="section-tag reveal" data-i18n="exp.tag">03 · Trayectoria</p>
+      <h2 class="section-title reveal" data-i18n="exp.title">Experiencia profesional</h2>
+      <p class="section-sub reveal" data-i18n-html="exp.sub">Todo mi recorrido ha sido en <strong class="hl">Viamatica</strong>, participando en múltiples proyectos estratégicos para distintos clientes.</p>
+
+      <div class="timeline">
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp1.date">Agosto 2025 — Actualidad</span>
+            <h3 data-i18n="exp1.role">Desarrollador Full Stack</h3>
+            <p class="timeline-company">Viamatica · ASUR (Aseguradora del Sur)</p>
+            <ul>
+              <li data-i18n="exp1.li1">Soluciones empresariales para el sector asegurador con microservicios y microfrontends.</li>
+              <li data-i18n="exp1.li2">Frontend con Angular, Tailwind CSS y arquitectura modular desacoplada.</li>
+              <li data-i18n="exp1.li3">APIs y servicios backend con Node.js, TypeScript, C# y .NET.</li>
+              <li data-i18n="exp1.li4">Flujos asincrónicos con Kafka para sincronizar usuarios y eventos entre plataformas.</li>
+              <li data-i18n="exp1.li5">Automatización de creación de usuarios entre ~7 sistemas desde una única transacción.</li>
+              <li data-i18n="exp1.li6">SSO, cacheo con Redis y documentación de APIs con Swagger/OpenAPI.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">Kafka</span>
+              <span class="tag">Redis</span><span class="tag">Docker</span><span class="tag">Oracle</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp2.date">Junio 2025 — Agosto 2025</span>
+            <h3 data-i18n="exp2.role">Desarrollador Full Stack</h3>
+            <p class="timeline-company">Viamatica · Claro</p>
+            <ul>
+              <li data-i18n="exp2.li1">Proyecto internacional con empresa intermediaria de Costa Rica para modernización corporativa.</li>
+              <li data-i18n="exp2.li2">Migración de formularios de Oracle Forms hacia Angular y Node.js.</li>
+              <li data-i18n="exp2.li3">Renderizado dinámico de formularios con Webix y estructuras configurables en MongoDB.</li>
+              <li data-i18n="exp2.li4">Lógica dinámica para construir formularios en tiempo de ejecución.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">Webix</span><span class="tag">MongoDB</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp3.date">Enero 2025 — Junio 2025</span>
+            <h3 data-i18n="exp3.role">Líder de Desarrollo Frontend</h3>
+            <p class="timeline-company">Viamatica · Promarisco</p>
+            <ul>
+              <li data-i18n="exp3.li1">Liderazgo técnico del equipo frontend desde la etapa inicial del proyecto.</li>
+              <li data-i18n="exp3.li2">Definición de arquitectura frontend, estándares y estructura escalable.</li>
+              <li data-i18n="exp3.li3">Módulos para gestión de usuarios, solicitudes de proveedores y control de visitantes.</li>
+              <li data-i18n="exp3.li4">Asignación de tareas, revisión de Pull Requests y seguimiento del equipo.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">Angular</span><span class="tag">Angular Material</span><span class="tag">Tailwind CSS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp4.date">Noviembre 2024 — Enero 2025</span>
+            <h3 data-i18n="exp4.role">Desarrollador Full Stack</h3>
+            <p class="timeline-company">Viamatica · Sellout / Labra</p>
+            <ul>
+              <li data-i18n="exp4.li1">Sistema POS para gestión de ventas, inventario y facturación.</li>
+              <li data-i18n="exp4.li2">Aplicación móvil multiplataforma con React Native.</li>
+              <li data-i18n="exp4.li3">APIs backend con Node.js y TypeScript, datos en PostgreSQL.</li>
+              <li data-i18n="exp4.li4">Redis para manejo de sesiones y optimización de rendimiento.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">React Native</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp5.date">Septiembre 2024 — Noviembre 2024</span>
+            <h3 data-i18n="exp5.role">Líder de Proyecto / Desarrollador Full Stack</h3>
+            <p class="timeline-company">Viamatica · PCG (Prefectura Ciudadana del Guayas)</p>
+            <ul>
+              <li data-i18n="exp5.li1">Liderazgo técnico y funcional, coordinando al equipo bajo metodología Scrum.</li>
+              <li data-i18n="exp5.li2">Sistema administrativo integrado con Active Directory (AD).</li>
+              <li data-i18n="exp5.li3">Microfrontends con Angular y backend con Node.js y PostgreSQL.</li>
+              <li data-i18n="exp5.li4">Revisión de Pull Requests y control de calidad de código.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">AD</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <span class="timeline-date" data-i18n="exp6.date">Mayo 2024 — Septiembre 2024</span>
+            <h3 data-i18n="exp6.role">Desarrollador Full Stack</h3>
+            <p class="timeline-company">Viamatica · VUI (Ventanilla Única de Inversiones – Ecuador)</p>
+            <ul>
+              <li data-i18n="exp6.li1">CMS empresarial desde cero para gestión dinámica de contenidos.</li>
+              <li data-i18n="exp6.li2">Frontend con Angular, Angular Material y Tailwind CSS.</li>
+              <li data-i18n="exp6.li3">Microservicios en Node.js, con MongoDB y PostgreSQL.</li>
+              <li data-i18n="exp6.li4">Estructuras matriciales para administración dinámica de contenidos, con SonarQube.</li>
+            </ul>
+            <div class="tags tags-sm">
+              <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">MongoDB</span><span class="tag">SonarQube</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section class="section section-alt" id="proyectos">
+    <div class="container">
+      <p class="section-tag reveal" data-i18n="proj.tag">04 · Proyectos destacados</p>
+      <h2 class="section-title reveal" data-i18n="proj.title">Soluciones empresariales</h2>
+      <p class="section-sub reveal" data-i18n-html="proj.sub">
+        Sistemas reales desarrollados para clientes corporativos y gubernamentales de Ecuador, todos
+        construidos en Viamatica. Las ilustraciones son representaciones propias del tipo de solución
+        <strong class="hl">(no capturas reales)</strong>, ya que se trata de software empresarial privado.
+      </p>
+
+      <div class="projects-grid">
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: plataforma de sincronización empresarial">
+              <defs><linearGradient id="gAsur" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gAsur)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <g stroke="rgba(34,211,238,0.35)" stroke-width="1.5">
+                <line x1="200" y1="115" x2="140" y2="70"/><line x1="200" y1="115" x2="260" y2="70"/>
+                <line x1="200" y1="115" x2="130" y2="140"/><line x1="200" y1="115" x2="270" y2="140"/>
+                <line x1="200" y1="115" x2="200" y2="55"/><line x1="200" y1="115" x2="200" y2="175"/>
+              </g>
+              <circle cx="140" cy="70" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="260" cy="70" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="130" cy="140" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="270" cy="140" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="200" cy="55" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="200" cy="175" r="9" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <path d="M200 92 L222 102 L222 128 Q222 148 200 158 Q178 148 178 128 L178 102 Z" fill="rgba(34,211,238,0.14)" stroke="#a8f8ff" stroke-width="2"/>
+              <path d="M191 122 l7 7 14 -14" fill="none" stroke="#eafeff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p1.badge">Sector asegurador · Confidencial</span>
+          <h3 data-i18n="p1.title">Plataforma de integración — ASUR (Aseguradora del Sur)</h3>
+          <p data-i18n="p1.desc">Suite de soluciones empresariales para el sector asegurador, orientada a sincronizar identidades y datos entre múltiples plataformas internas en tiempo real.</p>
+          <ul>
+            <li data-i18n="p1.li1">Automaticé la creación y sincronización de usuarios entre ~7 sistemas empresariales desde una única transacción.</li>
+            <li data-i18n="p1.li2">Implementé SSO y sincronización centralizada de credenciales entre plataformas.</li>
+            <li data-i18n="p1.li3">Diseñé flujos asincrónicos con Kafka (producers/consumers) para eventos entre sistemas.</li>
+            <li data-i18n="p1.li4">Usé Redis para cacheo y documenté las APIs con Swagger/OpenAPI.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">C# / .NET</span>
+            <span class="tag">Kafka</span><span class="tag">Redis</span><span class="tag">Oracle</span><span class="tag">Docker</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: CMS empresarial">
+              <defs><linearGradient id="gVui" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gVui)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <rect x="24" y="50" width="150" height="110" rx="8" fill="rgba(34,211,238,0.1)" stroke="#22d3ee" stroke-width="1.5"/>
+              <rect x="40" y="64" width="118" height="10" rx="3" fill="rgba(226,253,255,0.55)"/>
+              <rect x="40" y="82" width="90" height="7" rx="3" fill="rgba(226,253,255,0.25)"/>
+              <rect x="40" y="96" width="100" height="7" rx="3" fill="rgba(226,253,255,0.25)"/>
+              <rect x="184" y="50" width="192" height="50" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)"/>
+              <rect x="196" y="62" width="90" height="8" rx="3" fill="rgba(226,253,255,0.35)"/>
+              <rect x="196" y="78" width="140" height="7" rx="3" fill="rgba(226,253,255,0.18)"/>
+              <rect x="184" y="110" width="90" height="50" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)"/>
+              <rect x="286" y="110" width="90" height="50" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)"/>
+              <circle cx="200" cy="130" r="10" fill="rgba(34,211,238,0.18)" stroke="#22d3ee"/>
+              <circle cx="302" cy="130" r="10" fill="rgba(34,211,238,0.18)" stroke="#22d3ee"/>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p2.badge">Sector gubernamental · Confidencial</span>
+          <h3 data-i18n="p2.title">CMS empresarial — VUI (Ventanilla Única de Inversiones)</h3>
+          <p data-i18n="p2.desc">Gestor de contenidos construido desde cero para modernizar la gestión de información de la Ventanilla Única de Inversiones de Ecuador.</p>
+          <ul>
+            <li data-i18n="p2.li1">Arquitectura de microservicios en Node.js con frontend en Angular, Angular Material y Tailwind CSS.</li>
+            <li data-i18n="p2.li2">Persistencia híbrida en MongoDB y PostgreSQL para datos estructurados y no estructurados.</li>
+            <li data-i18n="p2.li3">Lógica de estructuras matriciales para administrar contenidos dinámicos en tiempo real.</li>
+            <li data-i18n="p2.li4">Redis para consultas frecuentes y calidad de código validada con SonarQube.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">MongoDB</span>
+            <span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">SonarQube</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: sistema POS y app móvil">
+              <defs><linearGradient id="gPos" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gPos)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <g>
+                <rect x="40" y="130" width="24" height="30" fill="rgba(34,211,238,0.5)"/>
+                <rect x="72" y="110" width="24" height="50" fill="rgba(34,211,238,0.65)"/>
+                <rect x="104" y="90" width="24" height="70" fill="rgba(34,211,238,0.8)"/>
+                <rect x="136" y="120" width="24" height="40" fill="rgba(34,211,238,0.6)"/>
+                <rect x="168" y="70" width="24" height="90" fill="#a8f8ff"/>
+              </g>
+              <rect x="30" y="164" width="170" height="2" fill="rgba(255,255,255,0.2)"/>
+              <g transform="translate(250,55)">
+                <rect x="0" y="0" width="90" height="120" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+                <rect x="10" y="14" width="70" height="80" rx="4" fill="rgba(34,211,238,0.12)"/>
+                <rect x="30" y="102" width="30" height="6" rx="3" fill="rgba(255,255,255,0.3)"/>
+                <rect x="20" y="28" width="50" height="8" rx="3" fill="rgba(226,253,255,0.5)"/>
+                <rect x="20" y="42" width="35" height="6" rx="3" fill="rgba(226,253,255,0.25)"/>
+                <circle cx="55" cy="70" r="14" fill="none" stroke="#22d3ee" stroke-width="2"/>
+                <path d="M50 70 l4 4 8 -8" fill="none" stroke="#eafeff" stroke-width="2" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p3.badge">Retail / Consumo masivo · Confidencial</span>
+          <h3 data-i18n="p3.title">Sistema POS — Sellout / Labra</h3>
+          <p data-i18n="p3.desc">Plataforma de punto de venta con app móvil complementaria para gestionar ventas, inventario y facturación en tiempo real.</p>
+          <ul>
+            <li data-i18n="p3.li1">Construí la app móvil multiplataforma en React Native para el equipo comercial en campo.</li>
+            <li data-i18n="p3.li2">Desarrollé las APIs backend con Node.js y TypeScript, con datos modelados en PostgreSQL.</li>
+            <li data-i18n="p3.li3">Implementé Redis para manejo de sesiones y optimización de rendimiento.</li>
+            <li data-i18n="p3.li4">Integré inventario, facturación y control de ventas en un flujo en tiempo real.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">React Native</span><span class="tag">Node.js</span><span class="tag">TypeScript</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: portal administrativo con Active Directory">
+              <defs><linearGradient id="gPcg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gPcg)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <g>
+                <rect x="30" y="52" width="340" height="26" rx="6" fill="rgba(255,255,255,0.05)"/>
+                <circle cx="46" cy="65" r="8" fill="rgba(34,211,238,0.3)" stroke="#22d3ee"/>
+                <rect x="62" y="60" width="120" height="6" rx="3" fill="rgba(226,253,255,0.4)"/>
+                <rect x="62" y="70" width="80" height="5" rx="3" fill="rgba(226,253,255,0.2)"/>
+
+                <rect x="30" y="86" width="340" height="26" rx="6" fill="rgba(255,255,255,0.05)"/>
+                <circle cx="46" cy="99" r="8" fill="rgba(34,211,238,0.3)" stroke="#22d3ee"/>
+                <rect x="62" y="94" width="140" height="6" rx="3" fill="rgba(226,253,255,0.4)"/>
+                <rect x="62" y="104" width="70" height="5" rx="3" fill="rgba(226,253,255,0.2)"/>
+
+                <rect x="30" y="120" width="340" height="26" rx="6" fill="rgba(255,255,255,0.05)"/>
+                <circle cx="46" cy="133" r="8" fill="rgba(34,211,238,0.3)" stroke="#22d3ee"/>
+                <rect x="62" y="128" width="100" height="6" rx="3" fill="rgba(226,253,255,0.4)"/>
+                <rect x="62" y="138" width="95" height="5" rx="3" fill="rgba(226,253,255,0.2)"/>
+              </g>
+              <g transform="translate(336,146)">
+                <rect x="-14" y="-6" width="28" height="22" rx="4" fill="#0e2229" stroke="#a8f8ff" stroke-width="2"/>
+                <path d="M-8 -6 v-8 a8 8 0 0 1 16 0 v8" fill="none" stroke="#a8f8ff" stroke-width="2"/>
+              </g>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p4.badge">Sector público · Confidencial</span>
+          <h3 data-i18n="p4.title">Portal administrativo — PCG (Prefectura Ciudadana del Guayas)</h3>
+          <p data-i18n="p4.desc">Sistema administrativo integrado con Active Directory para la gestión interna de la Prefectura del Guayas.</p>
+          <ul>
+            <li data-i18n="p4.li1">Lideré técnica y funcionalmente el proyecto, coordinando al equipo bajo Scrum.</li>
+            <li data-i18n="p4.li2">Integré autenticación y gestión de usuarios con Active Directory (AD).</li>
+            <li data-i18n="p4.li3">Desarrollé microfrontends en Angular para modularizar y escalar la aplicación.</li>
+            <li data-i18n="p4.li4">Construí el backend con Node.js y PostgreSQL, revisando Pull Requests del equipo.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Active Directory</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: migración de formularios legacy">
+              <defs><linearGradient id="gClaro" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gClaro)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <g stroke="rgba(255,255,255,0.28)" stroke-width="1.5" stroke-dasharray="4 4" fill="none">
+                <rect x="30" y="55" width="110" height="18" rx="3"/>
+                <rect x="30" y="82" width="110" height="18" rx="3"/>
+                <rect x="30" y="109" width="110" height="18" rx="3"/>
+                <rect x="30" y="136" width="70" height="18" rx="3"/>
+              </g>
+              <path d="M158 110 h48" stroke="#22d3ee" stroke-width="2.5" fill="none" marker-end="url(#arrowHead)"/>
+              <defs>
+                <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#22d3ee"/>
+                </marker>
+              </defs>
+              <g stroke="#22d3ee" stroke-width="1.5" fill="rgba(34,211,238,0.1)">
+                <rect x="222" y="55" width="150" height="18" rx="4"/>
+                <rect x="222" y="82" width="150" height="18" rx="4"/>
+                <rect x="222" y="109" width="150" height="18" rx="4"/>
+                <rect x="222" y="136" width="95" height="18" rx="4"/>
+              </g>
+              <path d="M330 145 l5 5 10 -10" stroke="#eafeff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p5.badge">Telecomunicaciones · Proyecto internacional</span>
+          <h3 data-i18n="p5.title">Modernización de formularios — Claro</h3>
+          <p data-i18n="p5.desc">Proyecto conjunto con una empresa intermediaria de Costa Rica para modernizar formularios corporativos legacy.</p>
+          <ul>
+            <li data-i18n="p5.li1">Migré formularios de Oracle Forms hacia Angular y Node.js.</li>
+            <li data-i18n="p5.li2">Implementé renderizado dinámico de formularios con Webix y estructuras configurables en MongoDB.</li>
+            <li data-i18n="p5.li3">Desarrollé lógica para construir formularios en tiempo de ejecución mediante identificadores parametrizados.</li>
+            <li data-i18n="p5.li4">Optimicé el flujo de carga y renderización de componentes dinámicos.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">Angular</span><span class="tag">Node.js</span><span class="tag">Webix</span><span class="tag">MongoDB</span>
+          </div>
+        </article>
+
+        <article class="project-card reveal">
+          <div class="project-visual">
+            <svg viewBox="0 0 400 200" role="img" aria-label="Ilustración: portal de proveedores">
+              <defs><linearGradient id="gProm" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0b1a22"/><stop offset="1" stop-color="#0a1420"/>
+              </linearGradient></defs>
+              <rect width="400" height="200" fill="url(#gProm)"/>
+              <rect width="400" height="30" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="18" cy="15" r="4" fill="rgba(255,255,255,0.22)"/><circle cx="32" cy="15" r="4" fill="rgba(255,255,255,0.14)"/><circle cx="46" cy="15" r="4" fill="rgba(255,255,255,0.1)"/>
+              <g stroke="rgba(34,211,238,0.35)" stroke-width="1.5">
+                <line x1="200" y1="115" x2="120" y2="80"/><line x1="200" y1="115" x2="280" y2="80"/>
+                <line x1="200" y1="115" x2="110" y2="150"/><line x1="200" y1="115" x2="290" y2="150"/>
+                <line x1="200" y1="115" x2="200" y2="170"/>
+              </g>
+              <circle cx="120" cy="80" r="12" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="280" cy="80" r="12" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="110" cy="150" r="12" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="290" cy="150" r="12" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="200" cy="170" r="12" fill="#0e2229" stroke="#22d3ee" stroke-width="1.5"/>
+              <circle cx="200" cy="115" r="22" fill="rgba(34,211,238,0.16)" stroke="#a8f8ff" stroke-width="2"/>
+              <rect x="192" y="105" width="16" height="20" rx="2" fill="none" stroke="#eafeff" stroke-width="2"/>
+              <line x1="195" y1="111" x2="205" y2="111" stroke="#eafeff" stroke-width="1.5"/>
+              <line x1="195" y1="116" x2="205" y2="116" stroke="#eafeff" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="project-badge" data-i18n="p6.badge">Industria acuícola · Confidencial</span>
+          <h3 data-i18n="p6.title">Portal de proveedores — Promarisco</h3>
+          <p data-i18n="p6.desc">Portal empresarial para la gestión de usuarios, solicitudes de proveedores y control de visitantes.</p>
+          <ul>
+            <li data-i18n="p6.li1">Lideré el equipo de desarrollo frontend desde la etapa inicial del proyecto.</li>
+            <li data-i18n="p6.li2">Definí la arquitectura frontend, estándares de desarrollo y estructura escalable.</li>
+            <li data-i18n="p6.li3">Construí módulos de gestión de usuarios, proveedores y control de visitantes.</li>
+            <li data-i18n="p6.li4">Apliqué Angular Material y Tailwind CSS con enfoque responsive y reusable.</li>
+          </ul>
+          <div class="tags tags-sm">
+            <span class="tag">Angular</span><span class="tag">Angular Material</span><span class="tag">Tailwind CSS</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="section" id="contacto">
+    <div class="container">
+      <p class="section-tag reveal" data-i18n="contact.tag">05 · Contacto</p>
+      <h2 class="section-title reveal" data-i18n="contact.title">Hablemos de tu próximo proyecto</h2>
+      <p class="section-sub reveal" data-i18n="contact.sub">Estoy abierto a nuevas oportunidades y colaboraciones. Escríbeme por cualquiera de estos medios.</p>
+
+      <div class="contact-grid">
+        <a href="mailto:moramiller12345@gmail.com" class="contact-card reveal">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/></svg>
+          </div>
+          <h3>Email</h3>
+          <p>moramiller12345@gmail.com</p>
+        </a>
+
+        <a href="tel:+593959847456" class="contact-card reveal">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.57.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.57 1 1 0 01-.25 1.02z"/></svg>
+          </div>
+          <h3 data-i18n="contact.phone">Teléfono</h3>
+          <p>+593 959 847 456</p>
+        </a>
+
+        <div class="contact-card no-hover reveal">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg>
+          </div>
+          <h3 data-i18n="contact.location">Ubicación</h3>
+          <p>Guayaquil, Ecuador</p>
+        </div>
+      </div>
+
+      <div class="cv-cta reveal">
+        <div>
+          <h3 data-i18n="contact.cv.title">¿Prefieres revisar mi CV completo?</h3>
+          <p data-i18n="contact.cv.sub">Descárgalo o imprímelo en un clic.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="btnPrintCv2" type="button" data-i18n="btn.print">Imprimir CV</button>
+          <a href="assets/cv/CV_Miller_Mora_ATS_Harvard.pdf" download class="btn btn-outline" data-i18n="btn.downloadPdf">Descargar CV (PDF)</a>
+          <a href="assets/cv/CV_Miller_Mora_ATS_Harvard.docx" download class="btn btn-outline" data-i18n="btn.downloadWord">Descargar CV (Word)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <a href="#inicio" class="logo">MJ<span class="dot">.</span></a>
+    <p>© <span id="year"></span> Miller Jeampier Mora Choez — <span data-i18n="footer.text">Diseñado y construido con HTML, CSS &amp; JavaScript.</span></p>
+    <a href="#inicio" class="back-top" aria-label="Volver arriba">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 6l-8 8 1.41 1.41L12 8.83l6.59 6.58L20 14z"/></svg>
+    </a>
+  </div>
+</footer>
+
+<iframe id="printFrame" src="about:blank" style="display:none" aria-hidden="true" title="Impresión de CV"></iframe>
+
+<script src="js/script.js"></script>
+</body>
+</html>
