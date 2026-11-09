@@ -156,21 +156,6 @@
   sections.forEach(sec => navObserver.observe(sec));
 
   /* ---------------------------------------------
-     SCROLL REVEAL
-  --------------------------------------------- */
-  const revealEls = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('in-view'), i * 60 % 300);
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-
-  revealEls.forEach(el => revealObserver.observe(el));
-
-  /* ---------------------------------------------
      STAT COUNTERS
   --------------------------------------------- */
   const counters = document.querySelectorAll('.stat-number');
@@ -525,6 +510,426 @@
       localStorage.setItem('mj-lang', next);
       applyLanguage(next);
     });
+  }
+
+  /* ---------------------------------------------
+     BUILD MODE — "Figma multiplayer" scroll reveal.
+     A crew of cursors races to each block as it scrolls in, drags out its
+     frame and grows it from the corner up to its real size.
+  --------------------------------------------- */
+  const revealEls = Array.from(document.querySelectorAll('.reveal'));
+
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  } else {
+    initBuildMode();
+  }
+
+  function initBuildMode() {
+    root.classList.add('build-mode');
+
+    const isSmall = window.matchMedia('(max-width: 768px)').matches;
+    const showLayers = window.matchMedia('(min-width: 1100px)').matches;
+    const CREW = [
+      { name: 'Miller', color: '#22d3ee', ink: '#04141a' },
+      { name: 'Angular', color: '#F24E1E', ink: '#fff' },
+      { name: 'Node.js', color: '#0ACF83', ink: '#04141a' },
+      { name: 'TypeScript', color: '#1ABCFE', ink: '#04141a' },
+      { name: 'Kafka', color: '#A259FF', ink: '#fff' },
+      { name: 'Redis', color: '#FF7262', ink: '#1a0604' },
+      { name: 'Docker', color: '#FFC700', ink: '#1a1400' },
+      { name: 'Claude', color: '#E8875B', ink: '#1a0a04' }
+    ].slice(0, isSmall ? 5 : 8);
+    const CHAT = {
+      es: ['listo ✓', 'pixel perfect', '¡quedó brutal!', 'alineado 📐', 'ship it 🚀', '🔥🔥', '+1', 'ese padding 👌'],
+      en: ['done ✓', 'pixel perfect', 'looks sick!', 'aligned 📐', 'ship it 🚀', '🔥🔥', '+1', 'nice padding 👌']
+    };
+
+    /* --- helpers --- */
+    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+    const easeInOut = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+    const easeOutBack = t => { const c1 = 1.6, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+    const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+    function layerName(el) {
+      if (/^(H1|H2|H3|P)$/.test(el.tagName)) {
+        const txt = el.textContent.replace(/\s+/g, ' ').replace('|', '').trim();
+        return { icon: 'T', label: txt ? (txt.length > 24 ? txt.slice(0, 24) + '…' : txt) : el.className.split(' ')[0] };
+      }
+      const cls = Array.from(el.classList).find(c => !/^(reveal|in-view)$/.test(c)) || el.tagName.toLowerCase();
+      return { icon: '#', label: cls };
+    }
+
+    /* --- layers (one per .reveal block) --- */
+    const items = revealEls.map((el, i) => ({ el, i, name: layerName(el), ghost: null, li: null, done: false }));
+    const itemOf = new Map(items.map(it => [it.el, it]));
+    const total = items.length;
+    let built = 0;
+    const queue = [];
+
+    /* --- blueprint ghosts: wireframe placeholders, page coordinates --- */
+    const ghostLayer = document.createElement('div');
+    ghostLayer.className = 'bm-ghosts';
+    ghostLayer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(ghostLayer);
+
+    items.forEach(it => {
+      const g = document.createElement('div');
+      g.className = 'bm-ghost';
+      let inner = `<span class="bm-ghost-name">${it.name.icon}  ${esc(it.name.label)}</span>`;
+      if (it.name.icon === 'T') {
+        g.classList.add('is-text');
+        const h = it.el.offsetHeight;
+        if (h < 44) g.classList.add('is-tiny');
+        const lines = clamp(Math.round(h / 30), 1, 7);
+        for (let k = 0; k < lines; k++) {
+          const w = (k === lines - 1 && lines > 1) ? 35 + Math.random() * 30 : 70 + Math.random() * 30;
+          inner += `<i style="width:${w.toFixed(0)}%;animation-delay:${(k * 0.12).toFixed(2)}s"></i>`;
+        }
+      }
+      g.innerHTML = inner;
+      ghostLayer.appendChild(g);
+      it.ghost = g;
+    });
+
+    function positionGhosts() {
+      const sx = window.scrollX;
+      const sy = window.scrollY;
+      items.forEach(it => {
+        if (it.done || !it.ghost) return;
+        const r = it.el.getBoundingClientRect();
+        const s = it.ghost.style;
+        s.left = `${r.left + sx}px`;
+        s.top = `${r.top + sy}px`;
+        s.width = `${r.width}px`;
+        s.height = `${r.height}px`;
+      });
+    }
+    positionGhosts();
+    let ghostTimer;
+    const scheduleGhosts = () => { clearTimeout(ghostTimer); ghostTimer = setTimeout(positionGhosts, 120); };
+    if ('ResizeObserver' in window) new ResizeObserver(scheduleGhosts).observe(document.body);
+    window.addEventListener('resize', scheduleGhosts);
+
+    /* --- overlay for cursors, frames & ripples (viewport coordinates) --- */
+    const layer = document.createElement('div');
+    layer.className = 'bm-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(layer);
+
+    const ARROW = (c) => `<svg viewBox="0 0 16 20" width="18" height="22"><path d="M1.5 1.5 L1.5 16 L5.3 12.6 L8 18.4 L10.5 17.2 L7.9 11.5 L13.2 11.5 Z" fill="${c}" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+
+    const cursors = CREW.map((m, i) => {
+      const el = document.createElement('div');
+      el.className = 'bm-cursor';
+      el.style.setProperty('--c', m.color);
+      el.style.setProperty('--ink', m.ink);
+      el.innerHTML = `${ARROW(m.color)}<span class="bm-cursor-label">${m.name}</span>`;
+      layer.appendChild(el);
+      const fromLeft = i % 2 === 0;
+      return {
+        el, m, label: el.querySelector('.bm-cursor-label'), seed: Math.random() * 10,
+        x: fromLeft ? -40 : window.innerWidth + 40,
+        y: window.innerHeight * (0.2 + Math.random() * 0.7),
+        state: 'idle', job: null, t0: 0, from: null, idleSince: 0, hidden: false, chatUntil: 0
+      };
+    });
+
+    function ripple(x, y, color) {
+      const r = document.createElement('span');
+      r.className = 'bm-ripple';
+      r.style.cssText = `left:${x}px;top:${y}px;--c:${color}`;
+      layer.appendChild(r);
+      setTimeout(() => r.remove(), 650);
+    }
+
+    function chat(c, now) {
+      const list = CHAT[currentLang === 'en' ? 'en' : 'es'];
+      c.label.textContent = list[Math.floor(Math.random() * list.length)];
+      c.el.classList.add('is-chat');
+      c.chatUntil = now + 1000;
+    }
+
+    /* --- presence + layers panel --- */
+    const panel = document.createElement('div');
+    panel.className = 'bm-panel' + (showLayers ? ' has-layers' : '');
+    panel.setAttribute('aria-hidden', 'true');
+    panel.innerHTML =
+      `<div class="bm-panel-head"><span class="bm-avatars">${CREW.map(m =>
+        `<span class="bm-avatar" style="--c:${m.color};--ink:${m.ink}">${m.name[0]}</span>`).join('')}</span><span class="bm-hud-text"></span></div>` +
+      (showLayers ? '<div class="bm-layers-title"></div><ul class="bm-layers"></ul>' : '');
+    document.body.appendChild(panel);
+    const hudText = panel.querySelector('.bm-hud-text');
+    const layersTitle = panel.querySelector('.bm-layers-title');
+    const layersList = panel.querySelector('.bm-layers');
+
+    if (layersList) {
+      let lastSection = null;
+      items.forEach(it => {
+        const sec = it.el.closest('section');
+        const secId = sec ? sec.id : 'page';
+        if (secId !== lastSection) {
+          lastSection = secId;
+          const g = document.createElement('li');
+          g.className = 'bm-li group';
+          g.innerHTML = `<span class="bm-li-icon">▾</span><span class="bm-li-name">⌗ ${esc(secId)}</span>`;
+          layersList.appendChild(g);
+        }
+        const li = document.createElement('li');
+        li.className = 'bm-li';
+        li.innerHTML = `<span class="bm-li-icon">${it.name.icon}</span><span class="bm-li-name">${esc(it.name.label)}</span>`;
+        layersList.appendChild(li);
+        it.li = li;
+      });
+    }
+
+    function focusLayer(it, color) {
+      if (!it.li) return;
+      it.li.style.setProperty('--c', color);
+      it.li.classList.add('is-building');
+      layersList.scrollTo({ top: it.li.offsetTop - layersList.clientHeight / 2, behavior: 'smooth' });
+    }
+
+    function updateHud() {
+      const en = currentLang === 'en';
+      if (layersTitle) layersTitle.textContent = en ? 'Layers' : 'Capas';
+      if (built >= total) {
+        hudText.innerHTML = `<b class="bm-ok">✓</b> ${en ? 'Published' : 'Publicado'} · ${total}/${total}`;
+        panel.classList.add('is-idle');
+        setTimeout(() => panel.classList.add('is-gone'), 3200);
+      } else {
+        hudText.innerHTML = `<b class="bm-live"></b>${CREW.length} ${en ? 'editing' : 'editando'} · ${built}/${total} ${en ? 'layers' : 'capas'}`;
+      }
+    }
+    updateHud();
+    if (langToggle) langToggle.addEventListener('click', updateHud);
+
+    /* --- job lifecycle: fly → frame → drop → hold --- */
+    function popChildren(el) {
+      el.querySelectorAll('.tag, li, .stat-card, .skill-head, .project-visual, .contact-icon, .edu-icon').forEach((child, i) => {
+        child.style.animationDelay = `${Math.min(i * 38, 600)}ms`;
+        child.classList.add('bm-child');
+      });
+    }
+
+    function finishItem(it, instant) {
+      const el = it.el;
+      el.style.transition = 'none';
+      el.classList.add('in-view');
+      el.style.transform = '';
+      el.style.opacity = '';
+      el.style.filter = '';
+      el.style.transformOrigin = '';
+      if (!instant) popChildren(el);
+      requestAnimationFrame(() => { el.style.transition = ''; });
+      it.done = true;
+      if (it.ghost) {
+        const g = it.ghost;
+        g.classList.add('is-gone');
+        setTimeout(() => g.remove(), 400);
+        it.ghost = null;
+      }
+      if (it.li) { it.li.classList.remove('is-building'); it.li.classList.add('is-built'); }
+      built++;
+      updateHud();
+    }
+
+    function startJob(c, now) {
+      while (queue.length) {
+        const it = queue.shift();
+        const r = it.el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) { finishItem(it, true); continue; }
+        const frame = document.createElement('div');
+        frame.className = 'bm-frame';
+        frame.style.setProperty('--c', c.m.color);
+        frame.style.setProperty('--ink', c.m.ink);
+        frame.innerHTML = `<span class="bm-frame-name">${it.name.icon}  ${esc(it.name.label)}</span><span class="bm-frame-size"></span><i class="h tl"></i><i class="h tr"></i><i class="h bl"></i><i class="h br"></i>`;
+        frame.style.opacity = '0';
+        layer.appendChild(frame);
+        c.job = { it, frame, sizeEl: frame.querySelector('.bm-frame-size') };
+        c.state = 'fly';
+        c.t0 = now;
+        c.from = { x: c.x, y: c.y };
+        if (c.hidden) { c.hidden = false; c.el.classList.remove('is-hidden'); }
+        return;
+      }
+    }
+
+    function placeFrame(job, left, top, w, h) {
+      const s = job.frame.style;
+      s.transform = `translate3d(${left}px, ${top}px, 0)`;
+      s.width = `${w}px`;
+      s.height = `${h}px`;
+    }
+
+    // layout box of an element whose transform is a centred scale
+    function layoutBox(el) {
+      const r = el.getBoundingClientRect();
+      const W = el.offsetWidth;
+      const H = el.offsetHeight;
+      return { left: r.left + (r.width - W) / 2, top: r.top + (r.height - H) / 2, W, H };
+    }
+
+    function addRedline(job) {
+      const prev = items[job.it.i - 1];
+      if (!prev) return;
+      const r = job.it.el.getBoundingClientRect();
+      const p = prev.el.getBoundingClientRect();
+      const vGap = r.top - p.bottom;
+      const hGap = r.left - p.right;
+      let html = '';
+      if (vGap > 4 && vGap < 260 && p.left < r.right && p.right > r.left) {
+        html = `<span class="bm-redline v" style="height:${vGap}px"><b>${Math.round(vGap)}</b></span>`;
+      } else if (hGap > 4 && hGap < 260 && p.top < r.bottom && p.bottom > r.top) {
+        html = `<span class="bm-redline h" style="width:${hGap}px"><b>${Math.round(hGap)}</b></span>`;
+      }
+      if (html) job.frame.insertAdjacentHTML('beforeend', html);
+    }
+
+    let running = false;
+    let idleTimer;
+
+    function tick(now) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const turbo = 1 + Math.min(queue.length / cursors.length, 3); // backlog → crew speeds up
+
+      cursors.forEach(c => { if (c.state === 'idle' && queue.length) startJob(c, now); });
+
+      let busy = queue.length > 0;
+
+      cursors.forEach(c => {
+        const job = c.job;
+        if (c.chatUntil && now > c.chatUntil) {
+          c.chatUntil = 0;
+          c.label.textContent = c.m.name;
+          c.el.classList.remove('is-chat');
+        }
+
+        if (c.state === 'fly') {
+          busy = true;
+          const r = job.it.el.getBoundingClientRect();
+          const tx = clamp(r.left, 6, vw - 30);
+          const ty = clamp(r.top, 6, vh - 30);
+          const dur = clamp(Math.hypot(tx - c.from.x, ty - c.from.y) * 0.45, 100, 320) / turbo;
+          const p = easeInOut(clamp((now - c.t0) / dur, 0, 1));
+          c.x = c.from.x + (tx - c.from.x) * p;
+          c.y = c.from.y + (ty - c.from.y) * p;
+          if (p >= 1) {
+            c.state = 'frame';
+            c.t0 = now;
+            job.frame.style.opacity = '1';
+            if (job.it.ghost) job.it.ghost.classList.add('is-gone');
+            focusLayer(job.it, c.m.color);
+          }
+        } else if (c.state === 'frame') {
+          // drag out the empty frame, corner to corner
+          busy = true;
+          const el = job.it.el;
+          const r = el.getBoundingClientRect();
+          const W = el.offsetWidth;
+          const H = el.offsetHeight;
+          const dur = clamp(180 + Math.sqrt(W * H) * 0.22, 200, 400) / turbo;
+          const p = easeInOut(clamp((now - c.t0) / dur, 0, 1));
+          placeFrame(job, r.left, r.top, W * p, H * p);
+          job.sizeEl.textContent = `${Math.round(W * p)} × ${Math.round(H * p)}`;
+          c.x = clamp(r.left + W * p, 6, vw - 30);
+          c.y = clamp(r.top + H * p, 6, vh - 30);
+          if (p >= 1) {
+            c.state = 'drop';
+            c.t0 = now;
+            c.from = { x: c.x, y: c.y };
+            job.frame.classList.add('is-drawn');
+            job.blur = W * H < 260000;
+            el.style.transition = 'none';
+            el.style.transformOrigin = '50% 50%';
+            el.style.transform = 'scale(0.5)';
+            el.style.opacity = '0';
+          }
+        } else if (c.state === 'drop') {
+          // click into the frame: content inflates from the centre to its real size
+          busy = true;
+          const el = job.it.el;
+          const b = layoutBox(el);
+          const dur = 440 / turbo;
+          const t = clamp((now - c.t0) / dur, 0, 1);
+          const cx = clamp(b.left + b.W / 2, 6, vw - 30);
+          const cy = clamp(b.top + Math.min(b.H / 2, vh * 0.4), 6, vh - 30);
+          const m = easeOutCubic(clamp(t / 0.3, 0, 1));
+          c.x = c.from.x + (cx - c.from.x) * m;
+          c.y = c.from.y + (cy - c.from.y) * m;
+          if (m >= 1 && !job.clicked) { job.clicked = true; ripple(cx, cy, c.m.color); }
+          const g = clamp((t - 0.22) / 0.78, 0, 1);
+          const s = 0.5 + 0.5 * easeOutBack(g);
+          el.style.transform = `scale(${s})`;
+          el.style.opacity = String(Math.min(1, g * 2.2));
+          if (job.blur) el.style.filter = g < 1 ? `blur(${((1 - g) * 7).toFixed(1)}px)` : '';
+          placeFrame(job, b.left, b.top, b.W, b.H);
+          if (t >= 1) {
+            c.state = 'hold';
+            c.t0 = now;
+            el.style.transform = 'none';
+            el.style.filter = '';
+            job.frame.classList.add('is-done');
+            job.sizeEl.textContent = `${b.W} × ${b.H}`;
+            addRedline(job);
+            popChildren(el);
+          }
+        } else if (c.state === 'hold') {
+          busy = true;
+          const r = job.it.el.getBoundingClientRect();
+          placeFrame(job, r.left, r.top, r.width, r.height);
+          if (now - c.t0 > 260 / turbo) {
+            finishItem(job.it, true);
+            const f = job.frame;
+            f.classList.add('is-out');
+            setTimeout(() => f.remove(), 260);
+            if (Math.random() < 0.2) chat(c, now);
+            c.job = null;
+            c.state = 'idle';
+            c.idleSince = now;
+          }
+        } else if (!c.hidden) {
+          // idle: drift a little, then fade out until there's work again
+          c.x += Math.sin(now * 0.003 + c.seed) * 0.4;
+          c.y += Math.cos(now * 0.0025 + c.seed) * 0.3;
+          if (now - c.idleSince > 1200 && !c.chatUntil) { c.hidden = true; c.el.classList.add('is-hidden'); }
+          else busy = true;
+        }
+        c.el.style.transform = `translate3d(${c.x}px, ${c.y}px, 0)`;
+      });
+
+      if (busy) {
+        requestAnimationFrame(tick);
+      } else {
+        running = false;
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { if (!running) panel.classList.add('is-idle'); }, 900);
+      }
+    }
+
+    function wake() {
+      panel.classList.remove('is-idle');
+      if (running) return;
+      running = true;
+      requestAnimationFrame(tick);
+    }
+
+    const buildObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        buildObserver.unobserve(entry.target);
+        queue.push(itemOf.get(entry.target));
+      });
+      queue.sort((a, b) => a.i - b.i);
+      if (queue.length) wake();
+    }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
+
+    // start a beat after the loader is gone, so the visitor sees the blueprint first
+    const begin = () => { positionGhosts(); revealEls.forEach(el => buildObserver.observe(el)); };
+    if (document.readyState === 'complete') setTimeout(begin, 900);
+    else window.addEventListener('load', () => { positionGhosts(); setTimeout(begin, 900); });
   }
 
   /* ---------------------------------------------
